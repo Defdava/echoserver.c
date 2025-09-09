@@ -19,6 +19,7 @@ int main() {
         exit(1);
     }
 
+    // set alamat server
     servaddr.sin_family = AF_INET;
     servaddr.sin_port = htons(PORT);
     servaddr.sin_addr.s_addr = inet_addr("127.0.0.1"); // localhost
@@ -29,7 +30,7 @@ int main() {
         exit(1);
     }
 
-    printf("Terhubung ke server. Ketik pesan:\n");
+    printf("Terhubung ke Echo Server.\n");
 
     while (1) {
         printf("Anda: ");
@@ -37,8 +38,9 @@ int main() {
         write(sockfd, buffer, strlen(buffer));
 
         int n = read(sockfd, buffer, BUF_SIZE);
+        if (n <= 0) break;
         buffer[n] = '\0';
-        printf("Echo dari server: %s", buffer);
+        printf("Echo: %s", buffer);
     }
 
     close(sockfd);
