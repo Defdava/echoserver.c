@@ -3,32 +3,15 @@
 #include <string.h>
 #include <unistd.h>
 #include <arpa/inet.h>
-#include <sys/socket.h>
-#include <signal.h>
 
 #define PORT 12345
 #define BUF_SIZE 1024
-
-void handle_client(int connfd) {
-    char buffer[BUF_SIZE];
-    int n;
-
-    while ((n = read(connfd, buffer, BUF_SIZE)) > 0) {
-        buffer[n] = '\0';
-        printf("Pesan dari client: %s", buffer);
-        write(connfd, buffer, strlen(buffer)); // echo balik
-    }
-    close(connfd);
-    exit(0);
-}
 
 int main() {
     int sockfd, connfd;
     struct sockaddr_in servaddr, cliaddr;
     socklen_t len;
-
-    // ignore zombie process
-    signal(SIGCHLD, SIG_IGN);
+    char buffer[BUF_SIZE];
 
     // buat socket
     sockfd = socket(AF_INET, SOCK_STREAM, 0);
@@ -54,23 +37,26 @@ int main() {
         exit(1);
     }
 
-    printf("Server berjalan di port %d...\n", PORT);
+    printf("Echo Server berjalan di port %d...\n", PORT);
 
-    while (1) {
-        len = sizeof(cliaddr);
-        connfd = accept(sockfd, (struct sockaddr *)&cliaddr, &len);
-        if (connfd < 0) {
-            perror("accept error");
-            continue;
-        }
-
-        if (fork() == 0) { // proses anak
-            close(sockfd);
-            handle_client(connfd);
-        }
-        close(connfd); // proses induk menutup koneksi client
+    // tunggu client
+    len = sizeof(cliaddr);
+    connfd = accept(sockfd, (struct sockaddr *)&cliaddr, &len);
+    if (connfd < 0) {
+        perror("accept error");
+        exit(1);
     }
 
+    // komunikasi
+    while (1) {
+        int n = read(connfd, buffer, BUF_SIZE);
+        if (n <= 0) break;
+        buffer[n] = '\0';
+        printf("Dari Client: %s", buffer);
+        write(connfd, buffer, strlen(buffer)); // echo balik
+    }
+
+    close(connfd);
     close(sockfd);
     return 0;
 }
