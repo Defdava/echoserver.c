@@ -51,7 +51,7 @@ int main() {
     // Tangani zombie process
     signal(SIGCHLD, sigchld_handler);
 
-    printf("Echo Server berjalan di port %d...\n", PORT);
+    printf("Echo Server T3 berjalan di port %d...\n", PORT);
 
     // Loop utama
     while (1) {
