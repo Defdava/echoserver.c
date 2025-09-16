@@ -1,5 +1,5 @@
-ps aux | grep echo | grep -v grep | awk '{ 
-    if ($11 ~ /echoserverT3/) {print $0, " <-- [SERVER]"} 
-    else if ($11 ~ /echoclientT3/) {print $0, " <-- [CLIENT]"} 
-    else {print $0} 
+ps aux | grep echo | grep -v grep | awk '{
+    if ($11 ~ /echoserverT3/) {print "\033[1;32m" $0 " <-- [SERVER]\033[0m"}
+    else if ($11 ~ /echoclientT3/) {print "\033[1;31m" $0 " <-- [CLIENT]\033[0m"}
+    else {print $0}
 }'
